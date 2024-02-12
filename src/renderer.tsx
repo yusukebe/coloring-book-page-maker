@@ -13,7 +13,9 @@ export const renderer = jsxRenderer(({ children }) => (
         <h1>Coloring Book Page Maker</h1>
       </header>
       <div>{children}</div>
-      <p><a href="https://github.com/rickyrobinett/coloring-book-page-maker">See the code</a></p>
+      <p>
+        <a href="https://github.com/rickyrobinett/coloring-book-page-maker">See the code</a>
+      </p>
     </body>
   </html>
 ))

@@ -7,15 +7,6 @@ type Bindings = {
   AI: any
 }
 
-type Answer = {
-  response: string
-}
-
-type Message = {
-  content: string
-  role: string
-}
-
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.get('/script.js', (c) => {
@@ -53,21 +44,26 @@ app.get('/', (c) => {
 
 app.post('/ai', async (c) => {
   // Get prompt from request
-  const json = await c.req.json();
-  const prompt = json.prompt;
+  const json = await c.req.json()
+  const prompt = json.prompt
 
   // Make request to Workers AI
   const ai = new Ai(c.env.AI)
-  const image: Uint8Array = await ai.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', {
-    prompt: `A basic black and white coloring book page for a 7 year old of ${prompt}.`
+  const image = await ai.run('@cf/stabilityai/stable-diffusion-xl-base-1.0', {
+    prompt: `A basic black and white coloring book page for a 7 year old of ${prompt}.`,
+    num_steps: 20
   })
 
   // Convert response to base64
-  const binaryString = new Uint8Array(image).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-  const base64Image = btoa(binaryString);
+  const binaryString = new Uint8Array(image).reduce((acc, byte) => acc + String.fromCharCode(byte), '')
+  const base64Image = btoa(binaryString)
 
   // Send base64 string in our response so we can embed it in our webpage
-  return c.render("data:image/png;base64,"+base64Image);
+  return c.body('data:image/png;base64,' + base64Image, {
+    headers: {
+      'Content-Type': 'image/png'
+    }
+  })
 })
 
 export default app
